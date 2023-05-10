@@ -5,6 +5,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("Campus")
-public class CampusController extends BaseController<Campus>{
-}
+@RequestMapping("/api/campus")
+public class CampusController extends BaseController<Campus>{ }

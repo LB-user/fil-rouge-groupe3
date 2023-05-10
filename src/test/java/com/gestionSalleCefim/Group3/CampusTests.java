@@ -24,7 +24,6 @@ public class CampusTests {
     @Autowired
     private CampusService campusService;
 
-
     @Test
     void testGetAllCampus() throws Exception {
         List<Campus> campus = campusService.getAll();

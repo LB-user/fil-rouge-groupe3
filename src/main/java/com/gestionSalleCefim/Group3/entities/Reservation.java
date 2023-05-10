@@ -41,9 +41,9 @@ public class Reservation {
     // @JoinColumn(name = "formation_id", nullable = false)
     // private Formation formation;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "utilisateur_id", nullable = false)
-    private User User;
+    private User User;*/
 
     // @ManyToOne
     // @JoinColumn(name = "salle_id", nullable = false)
