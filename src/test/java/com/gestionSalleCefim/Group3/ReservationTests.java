@@ -29,14 +29,14 @@ public class ReservationTests {
 
     @Test
     void testGetAllReservations() throws Exception {
-        List<Reservation> reservations = reservationService.getAllReservations();
+        List<Reservation> reservations = reservationService.getAll();
         reservations.forEach(reservation -> System.out.println(reservation.getDescription()));
     }
 
     @Test
     void testGetReservationById() throws Exception {
-        Reservation reservation = reservationService.getReservationById(3);
-        assertEquals("Réunion",reservation.getTitre());
+        Reservation reservation = reservationService.getById(3);
+        assertEquals("Réunion",reservation.getTitle());
     }
 }
 

@@ -20,22 +20,22 @@ public class Reservation {
     private Integer id;
 
     @Column(name = "titre", nullable = false, length = 50)
-    private String titre;
+    private String title;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "date_debut", nullable = false)
-    private LocalDate dateDebut;
+    private LocalDate startDate;
 
     @Column(name = "date_fin", nullable = false)
-    private LocalDate dateFin;
+    private LocalDate endDate;
 
     @Column(name = "heure_debut")
-    private LocalTime heureDebut;
+    private LocalTime startHour;
 
     @Column(name = "heure_fin")
-    private LocalTime heureFin;
+    private LocalTime endHour;
 
     // @ManyToOne
     // @JoinColumn(name = "formation_id", nullable = false)
@@ -43,7 +43,7 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "utilisateur_id", nullable = false)
-    private User utilisateur;
+    private User User;
 
     // @ManyToOne
     // @JoinColumn(name = "salle_id", nullable = false)

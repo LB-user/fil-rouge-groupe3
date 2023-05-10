@@ -1,16 +1,11 @@
 package com.gestionSalleCefim.Group3.services;
 
 import com.gestionSalleCefim.Group3.entities.Reservation;
-import com.gestionSalleCefim.Group3.repositories.ReservationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Service
-public class ReservationService {
-    @Autowired
+public class ReservationService extends BaseService<Reservation>{
+   /* @Autowired
     private ReservationRepository reservationRepository;
 
 
@@ -45,7 +40,7 @@ public class ReservationService {
 
      */
 
-    public List<Reservation> getReservationsByUtilisateurId(Integer utilisateurId) {
+   /*  public List<Reservation> getReservationsByUtilisateurId(Integer utilisateurId) {
         return reservationRepository.findByUtilisateurId(utilisateurId);
     }
     /*
@@ -55,7 +50,7 @@ public class ReservationService {
 
      */
 
-    public Reservation createReservation(Reservation reservation) {
+    /* public Reservation createReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
     }
 
@@ -77,5 +72,5 @@ public class ReservationService {
     public void deleteReservation(Integer id) {
         Reservation reservation = getReservationById(id);
         reservationRepository.delete(reservation);
-    }
+    } */
 }

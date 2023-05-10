@@ -1,17 +1,12 @@
 package com.gestionSalleCefim.Group3.controllers;
 
 import com.gestionSalleCefim.Group3.entities.Reservation;
-import com.gestionSalleCefim.Group3.services.ReservationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/reservations")
-public class ReservationController {
+public class ReservationController extends BaseController<Reservation>{
+}
+/*
     @Autowired
     private  ReservationService reservationService;
 
@@ -48,4 +43,4 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-}
+} */
