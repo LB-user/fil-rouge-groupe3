@@ -1,9 +1,9 @@
 package com.gestionSalleCefim.Group3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gestionSalleCefim.Group3.entities.User;
-import com.gestionSalleCefim.Group3.repositories.UserRepository;
-import com.gestionSalleCefim.Group3.services.UserService;
+import com.gestionSalleCefim.Group3.entities.Role;
+import com.gestionSalleCefim.Group3.repositories.RoleRepository;
+import com.gestionSalleCefim.Group3.services.RoleService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,12 +22,12 @@ import java.util.List;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class UserTests {
+public class RoleTests {
     @Autowired
-    private UserRepository userRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    private UserService userService;
+    private RoleService roleService;
 
     // Classe pour simuler des appels REST
     @Autowired
@@ -38,25 +38,25 @@ public class UserTests {
     private ObjectMapper objectMapper;
 
     @Test
-    void testPrintAllUsersLastName(){
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> System.out.println(user.getLastName()));
+    void testPrintAllRolesName(){
+        List<Role> roles = roleRepository.findAll();
+        roles.forEach(role -> System.out.println(role.getName()));
     }
 
     @Test
-    void testGetAllUsersByAPI() throws Exception {
+    void testGetAllRolesByAPI() throws Exception {
         // Création de notre requête au moyen de la classe MockMvcRequestBuilders
         // Utilisation de la méthode correspondant au verbe HTTP voulu, qui prend en paramètre l'URL du point d'API
-        RequestBuilder request = MockMvcRequestBuilders.get("/api/user/all");
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/role/all");
         // Test du status de la réponse, ici 200 (isOk())
         ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
         String contentAsString = mockMvc.perform(request)
                 .andExpect(resultStatus)
                 .andReturn().getResponse().getContentAsString();
 
-        // Désérialisation du contenu de la réponse en List<Book>
-        List<User> users = Arrays.asList(objectMapper.readValue(contentAsString, User[].class));
+        // Désérialisation du contenu de la réponse en List<Roles>
+        List<Role> roles = Arrays.asList(objectMapper.readValue(contentAsString, Role[].class));
 
-        Assertions.assertTrue(users.contains(userService.getById(1)));
+        Assertions.assertTrue(roles.contains(roleService.getById(1)));
     }
 }
