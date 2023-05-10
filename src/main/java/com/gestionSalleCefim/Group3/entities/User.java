@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "utilisateur")
 @Data
@@ -26,7 +24,8 @@ public class User {
     @Column(name = "mot_de_passe")
     private String password;
 
-    User(String lastname){
-        this.lastName = lastname;
+    public User(String email, String password){
+        this.email = email;
+        this.password = password;
     }
 }

@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,14 +33,18 @@ public abstract class BaseService<T> {
      * @return the newly created entity
      */
     @Transactional
-    public T save(T entity) throws Exception {
-        int entityId = (Integer) entity.getClass().getMethod("getId").invoke(entity);
-        Optional<T> originalBook = repository.findById(entityId);
-        if (originalBook.isEmpty()){
-            return repository.save(entity);
+    public T save(T entity) {
+        try {
+            Integer entityId = (Integer) entity.getClass().getMethod("getId").invoke(entity);
+            if (entityId == null || !repository.existsById(entityId)) {
+                return repository.save(entity);
+            }
+            throw new RuntimeException("Entity with id " + entityId + " already exists");
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
-        throw new RuntimeException("Entity with id " + entityId + " already exists");
     }
+
 
     /**
      * Returns a list of all entities.
