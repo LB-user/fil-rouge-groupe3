@@ -23,4 +23,8 @@ public class Room {
     private String location;
     @Column(name = "equipement")
     private String equipment;
+
+    public Room(String name) {
+        this.name = name;
+    }
 }
