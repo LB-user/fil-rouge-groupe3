@@ -1,7 +1,10 @@
 package com.gestionSalleCefim.Group3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gestionSalleCefim.Group3.entities.Reservation;
+import com.gestionSalleCefim.Group3.entities.Role;
 import com.gestionSalleCefim.Group3.entities.User;
+import com.gestionSalleCefim.Group3.repositories.RoleRepository;
 import com.gestionSalleCefim.Group3.repositories.UserRepository;
 import com.gestionSalleCefim.Group3.services.UserService;
 import jakarta.transaction.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -63,8 +67,39 @@ public class UserTests {
     }
 
     @Test
+    void testFindUserById() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/user/{id}", 1);
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Dupont"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("Laurent"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("laurent.dupont@mail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("mypassword"))
+                .andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    void testFindUserByIdError() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/user/{id}", 1);
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Dupond"))
+                //erreur attendue : java.lang.AssertionError: JSON path "$.lastName" expected:<Dupond> but was:<Dupont>
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("Laurent"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("laurent.dupont@mail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("mypassword"))
+                .andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
     void testPostUser() throws Exception {
-        User user = new User(null,"Dupont", "Laurent", "laurent.dupond@mail.com", "mypassworddd");
+        User user = new User(null,"Dupont", "Laurent", "laurent.dupond@mail.com", "mypassword", new Role());
         RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user));
@@ -80,7 +115,8 @@ public class UserTests {
 
     @Test
     void testPostUserIdExists() throws Exception {
-        User user = new User(1,"Dupond", "Laurent", "laurent.dupont@mail.com", "mypassword");
+
+        User user = new User(1,"Dupond", "Laurent", "laurent.dupont@mail.com", "mypassword", new Role());
         RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user));
@@ -92,5 +128,38 @@ public class UserTests {
 
         User newUser = objectMapper.readValue(contentAsString, User.class);
         assert !Objects.equals(newUser.getLastName(), user.getLastName());
+    }
+
+    @Test
+    void testDeleteUser() throws Exception {
+        //User user = userRepository.findById(1).orElse(null);
+        //Assertions.assertNotNull(user);
+
+        mockMvc.perform( MockMvcRequestBuilders.delete("/api/user/{id}", 1) )
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        //User user1 = userRepository.findById(1).orElse(null);
+        //Assertions.assertNull(user1);
+    }
+
+    @Test
+    public void testUpdateUser() throws Exception
+    {
+        List<Reservation> reservations = new ArrayList<>();
+        User user = new User(1, "Valentin", "Amédée", "email@mail.com", "password", new Role(), reservations);
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/user/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Valentin"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("Amédée"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("email@mail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"))
+                .andReturn().getResponse().getContentAsString();
+
     }
 }

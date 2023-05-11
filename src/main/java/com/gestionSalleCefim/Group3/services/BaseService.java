@@ -79,9 +79,9 @@ public abstract class BaseService<T> {
      */
     @Transactional
     public T update(int id, T entity) {
-        T originalEntity = repository.findById(id)
+        repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
-        return repository.save(originalEntity);
+        return repository.save(entity);
     }
 
     /**
