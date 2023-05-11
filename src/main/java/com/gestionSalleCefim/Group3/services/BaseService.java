@@ -1,5 +1,7 @@
 package com.gestionSalleCefim.Group3.services;
 
+import com.gestionSalleCefim.Group3.exceptions.EntityAlreadyExistsException;
+import com.gestionSalleCefim.Group3.exceptions.InvalidEntityException;
 import com.gestionSalleCefim.Group3.repositories.BaseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This abstract class serves as a base service for working with entities in a Spring Boot application.
@@ -31,20 +32,21 @@ public abstract class BaseService<T> {
      *
      * @param entity the entity to create
      * @return the newly created entity
+     * @throws EntityAlreadyExistsException if an entity with the same ID already exists in the database
+     * @throws InvalidEntityException if the entity does not have a valid ID field
      */
     @Transactional
-    public T save(T entity) {
+    public T save(T entity) throws EntityAlreadyExistsException, InvalidEntityException {
         try {
             Integer entityId = (Integer) entity.getClass().getMethod("getId").invoke(entity);
             if (entityId == null || !repository.existsById(entityId)) {
                 return repository.save(entity);
             }
-            throw new RuntimeException("Entity with id " + entityId + " already exists");
+            throw new EntityAlreadyExistsException("Entity with id " + entityId + " already exists");
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new InvalidEntityException("Failed to get ID field from entity", e);
         }
     }
-
 
     /**
      * Returns a list of all entities.
@@ -93,5 +95,4 @@ public abstract class BaseService<T> {
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
         repository.delete(entityToDelete);
     }
-
 }

@@ -1,5 +1,7 @@
 package com.gestionSalleCefim.Group3.controllers;
 
+import com.gestionSalleCefim.Group3.exceptions.EntityAlreadyExistsException;
+import com.gestionSalleCefim.Group3.exceptions.InvalidEntityException;
 import com.gestionSalleCefim.Group3.services.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,6 @@ import java.util.List;
  * @param <T> the type of entity this controller handles
  */
 public abstract class BaseController<T> {
-    protected static final String NOT_AVAILABLE_CONTENT = "Désolé, ce contenu n'est pas disponible pour le moment.";
     /**
      * The service layer for working with entities. This is autowired by Spring at runtime.
      */
@@ -30,13 +31,9 @@ public abstract class BaseController<T> {
      * @return a ResponseEntity containing the newly created entity
      */
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody T entity) {
-        try {
-            T createdEntity = baseService.save(entity);
-            return ResponseEntity.ok(createdEntity);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<?> create(@RequestBody T entity) throws EntityAlreadyExistsException, InvalidEntityException {
+        T createdEntity = baseService.save(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEntity);
     }
 
     /**
@@ -46,12 +43,7 @@ public abstract class BaseController<T> {
      */
     @GetMapping("/all")
     public ResponseEntity<List<?>> getAll() {
-        try {
-            List<T> entities = baseService.getAll();
-            return ResponseEntity.ok(entities);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return ResponseEntity.ok(baseService.getAll());
     }
 
     /**
@@ -62,16 +54,7 @@ public abstract class BaseController<T> {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
-        try {
-            T entity = baseService.getById(id);
-            if (entity == null) {
-                return ResponseEntity.notFound().build();
-            } else {
-                return ResponseEntity.ok(entity);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return ResponseEntity.ok(baseService.getById(id));
     }
 
     /**
@@ -82,12 +65,7 @@ public abstract class BaseController<T> {
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody T entity) {
-        try {
-            T updatedEntity = baseService.update(id, entity);
-            return ResponseEntity.ok(updatedEntity);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return ResponseEntity.ok(baseService.update(id, entity));
     }
 
     /**
@@ -98,11 +76,7 @@ public abstract class BaseController<T> {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        try {
-            baseService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        baseService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

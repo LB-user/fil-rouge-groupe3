@@ -64,17 +64,33 @@ public class UserTests {
 
     @Test
     void testPostUser() throws Exception {
-        User user = new User("azafezeg@sdf.com", "sdfdfhsh65R6//");
+        User user = new User(null,"Dupont", "Laurent", "laurent.dupond@mail.com", "mypassworddd");
         RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user));
 
-        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isCreated();
         String contentAsString = mockMvc.perform(request)
                 .andExpect(resultStatus)
                 .andReturn().getResponse().getContentAsString();
 
         User newUser = objectMapper.readValue(contentAsString, User.class);
         assert Objects.equals(newUser.getEmail(), user.getEmail());
+    }
+
+    @Test
+    void testPostUserIdExists() throws Exception {
+        User user = new User(1,"Dupond", "Laurent", "laurent.dupont@mail.com", "mypassword");
+        RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isConflict();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andReturn().getResponse().getContentAsString();
+
+        User newUser = objectMapper.readValue(contentAsString, User.class);
+        assert !Objects.equals(newUser.getLastName(), user.getLastName());
     }
 }
