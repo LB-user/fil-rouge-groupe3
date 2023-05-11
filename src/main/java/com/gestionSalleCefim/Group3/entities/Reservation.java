@@ -37,15 +37,15 @@ public class Reservation {
     @Column(name = "heure_fin")
     private LocalTime endHour;
 
-    // @ManyToOne
-    // @JoinColumn(name = "formation_id", nullable = false)
-    // private Formation formation;
+    @ManyToOne
+    @JoinColumn(name = "formation_id", referencedColumnName = "id", nullable = false)
+    private Course course;
 
-    /*@ManyToOne
-    @JoinColumn(name = "utilisateur_id", nullable = false)
-    private User User;*/
+    @ManyToOne
+    @JoinColumn(name = "utilisateur_id", referencedColumnName = "id", nullable = false)
+    private User user;
 
-    // @ManyToOne
-    // @JoinColumn(name = "salle_id", nullable = false)
-    // private Salle salle;
+    @ManyToOne
+    @JoinColumn(name = "salle_id", referencedColumnName = "id", nullable = false)
+    private Room room;
 }

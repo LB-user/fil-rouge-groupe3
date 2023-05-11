@@ -38,6 +38,12 @@ public class ReservationTests {
         Reservation reservation = reservationService.getById(3);
         assertEquals("Réunion",reservation.getTitle());
     }
+
+    @Test
+    void testGetUserOfReservationById() throws Exception {
+        Reservation reservation = reservationService.getById(3);
+        assertEquals("Dupont",reservation.getUser().getLastName());
+    }
 }
 
 
