@@ -29,6 +29,10 @@ public class Building {
     @Column(name = "code_postal")
     private String postalCode;
 
+    @ManyToOne
+    @JoinColumn(name = "campus_id", referencedColumnName = "id", nullable = false)
+    private Campus campus;
+
     Building(String name){
         this.name = name;
     }

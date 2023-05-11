@@ -24,6 +24,10 @@ public class User {
     @Column(name = "mot_de_passe")
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "roles_id", referencedColumnName = "id", nullable = false)
+    private Role role;
+
     public User(String email, String password){
         this.email = email;
         this.password = password;

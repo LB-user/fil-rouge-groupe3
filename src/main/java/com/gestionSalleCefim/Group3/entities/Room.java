@@ -24,6 +24,10 @@ public class Room {
     @Column(name = "equipement")
     private String equipment;
 
+    @ManyToOne
+    @JoinColumn(name = "batiment_id", referencedColumnName = "id", nullable = false)
+    private Building building;
+
     public Room(String name) {
         this.name = name;
     }
