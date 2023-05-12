@@ -8,6 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -78,6 +80,18 @@ public abstract class BaseService<T, R extends BaseRepository<T, Integer>> {
         getAll();
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
+    }
+
+    /**
+     * Returns a list of all entities from filter
+     *
+     * @param entity the entity with filters
+     */
+    public List<T> getAllByFilter(T entity) {
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll()
+                .withIgnoreNullValues()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+        return repository.findAll(Example.of(entity, exampleMatcher));
     }
 
     /**

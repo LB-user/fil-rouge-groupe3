@@ -59,12 +59,22 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
     }
 
     /**
+     * Returns the entity with the specified ID.
+     *
+     * @return a ResponseEntity containing a list of all entities with filter
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<?> getAllByFilter(@RequestBody T entity) {
+        return ResponseEntity.ok(baseService.getAllByFilter(entity));
+    }
+
+    /**
      * Updates an existing entity.
      *
      * @param entity the entity to update
      * @return a ResponseEntity containing the updated entity
      */
-    @PutMapping("")
+    @PutMapping
     public ResponseEntity<?> update(@RequestBody T entity) throws InvalidEntityException {
         return ResponseEntity.ok(baseService.update(entity));
     }
