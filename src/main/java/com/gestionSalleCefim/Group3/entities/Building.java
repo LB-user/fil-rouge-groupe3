@@ -40,7 +40,7 @@ public class Building {
     @JoinColumn(name = "campus_id", referencedColumnName = "id", nullable = false)
     private Campus campus;
 
-    @OneToMany(mappedBy = "building", targetEntity = Room.class)
+    @OneToMany(mappedBy = "building", targetEntity = Room.class, cascade = CascadeType.ALL)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Room> rooms = new ArrayList<>();
 }

@@ -35,7 +35,7 @@ public class User {
     @JoinColumn(name = "roles_id", referencedColumnName = "id", nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user", targetEntity = Reservation.class)
+    @OneToMany(mappedBy = "user", targetEntity = Reservation.class, cascade = CascadeType.ALL)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Reservation> reservations = new ArrayList<>();
 }

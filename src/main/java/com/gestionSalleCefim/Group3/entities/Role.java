@@ -24,7 +24,7 @@ public class Role {
     private Integer id;
     @Column(name = "nom")
     private String name;
-    @OneToMany(mappedBy = "role", targetEntity = User.class)
+    @OneToMany(mappedBy = "role", targetEntity = User.class, cascade = CascadeType.ALL)
     @JsonIdentityReference(alwaysAsId = true)
     private List<User> users = new ArrayList<>();
 }

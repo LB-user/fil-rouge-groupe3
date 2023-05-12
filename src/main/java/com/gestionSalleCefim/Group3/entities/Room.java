@@ -35,7 +35,7 @@ public class Room {
     @JoinColumn(name = "batiment_id", referencedColumnName = "id", nullable = false)
     private Building building;
 
-    @OneToMany(mappedBy = "room", targetEntity = Reservation.class)
+    @OneToMany(mappedBy = "room", targetEntity = Reservation.class, cascade = CascadeType.ALL)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Reservation> reservations = new ArrayList<>();
 }
