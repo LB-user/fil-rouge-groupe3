@@ -63,9 +63,9 @@ public abstract class BaseController<T> {
      * @param entity the entity to update
      * @return a ResponseEntity containing the updated entity
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody T entity) {
-        return ResponseEntity.ok(baseService.update(id, entity));
+    @PutMapping("")
+    public ResponseEntity<?> update(@RequestBody T entity) throws InvalidEntityException {
+        return ResponseEntity.ok(baseService.update(entity));
     }
 
     /**

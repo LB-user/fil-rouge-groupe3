@@ -35,10 +35,6 @@ public class Room {
     @JoinColumn(name = "batiment_id", referencedColumnName = "id", nullable = false)
     private Building building;
 
-    public Room(String name) {
-        this.name = name;
-    }
-
     @OneToMany(mappedBy = "room", targetEntity = Reservation.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Reservation> reservations = new ArrayList<>();

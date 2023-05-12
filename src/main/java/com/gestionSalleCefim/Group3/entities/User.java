@@ -38,13 +38,4 @@ public class User {
     @OneToMany(mappedBy = "user", targetEntity = Reservation.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Reservation> reservations = new ArrayList<>();
-
-    public User(Integer id, String lastName, String firstName, String email, String password, Role role) {
-        this.id = id;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 }

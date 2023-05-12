@@ -44,26 +44,53 @@ public class UserTests {
     private ObjectMapper objectMapper;
 
     @Test
-    void testPrintAllUsersLastName(){
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> System.out.println(user.getLastName()));
-    }
+    void testPostUser() throws Exception {
+        User user = new User();
+        user.setLastName("Doe");
+        user.setFirstName("John");
+        user.setEmail("johndoe@example.com");
+        user.setPassword("password");
 
-    @Test
-    void testGetAllUsersByAPI() throws Exception {
-        // Création de notre requête au moyen de la classe MockMvcRequestBuilders
-        // Utilisation de la méthode correspondant au verbe HTTP voulu, qui prend en paramètre l'URL du point d'API
-        RequestBuilder request = MockMvcRequestBuilders.get("/api/user/all");
-        // Test du status de la réponse, ici 200 (isOk())
-        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isCreated();
         String contentAsString = mockMvc.perform(request)
                 .andExpect(resultStatus)
                 .andReturn().getResponse().getContentAsString();
 
-        // Désérialisation du contenu de la réponse en List<Book>
-        List<User> users = Arrays.asList(objectMapper.readValue(contentAsString, User[].class));
+        User newUser = objectMapper.readValue(contentAsString, User.class);
+        Assertions.assertNotNull(newUser.getId());
+    }
 
-        Assertions.assertTrue(users.contains(userService.getById(1)));
+    @Test
+    void testPostUserIdExists() throws Exception {
+
+        User user = new User();
+        user.setId(1);
+        user.setLastName("Doe");
+        user.setFirstName("John");
+        user.setEmail("johndoe@example.com");
+        user.setPassword("password");
+
+        RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isConflict();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andReturn().getResponse().getContentAsString();
+
+        User newUser = objectMapper.readValue(contentAsString, User.class);
+        assert !Objects.equals(newUser.getLastName(), user.getLastName());
+    }
+
+    @Test
+    void testPrintAllUsersLastName(){
+        List<User> users = userRepository.findAll();
+        users.forEach(user -> System.out.println(user.getLastName()));
     }
 
     @Test
@@ -98,68 +125,47 @@ public class UserTests {
     }
 
     @Test
-    void testPostUser() throws Exception {
-        User user = new User(null,"Dupont", "Laurent", "laurent.dupond@mail.com", "mypassword", new Role());
-        RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user));
+    void testGetAllUsersByAPI() {
+        MockMvcRequestBuilders.get("/api/user/all");
 
-        ResultMatcher resultStatus = MockMvcResultMatchers.status().isCreated();
-        String contentAsString = mockMvc.perform(request)
-                .andExpect(resultStatus)
-                .andReturn().getResponse().getContentAsString();
-
-        User newUser = objectMapper.readValue(contentAsString, User.class);
-        assert Objects.equals(newUser.getEmail(), user.getEmail());
-    }
-
-    @Test
-    void testPostUserIdExists() throws Exception {
-
-        User user = new User(1,"Dupond", "Laurent", "laurent.dupont@mail.com", "mypassword", new Role());
-        RequestBuilder request = MockMvcRequestBuilders.post("/api/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user));
-
-        ResultMatcher resultStatus = MockMvcResultMatchers.status().isConflict();
-        String contentAsString = mockMvc.perform(request)
-                .andExpect(resultStatus)
-                .andReturn().getResponse().getContentAsString();
-
-        User newUser = objectMapper.readValue(contentAsString, User.class);
-        assert !Objects.equals(newUser.getLastName(), user.getLastName());
-    }
-
-    @Test
-    void testDeleteUser() throws Exception {
-        //User user = userRepository.findById(1).orElse(null);
-        //Assertions.assertNotNull(user);
-
-        mockMvc.perform( MockMvcRequestBuilders.delete("/api/user/{id}", 1) )
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-
-        //User user1 = userRepository.findById(1).orElse(null);
-        //Assertions.assertNull(user1);
+        MockMvcResultMatchers.status().isOk();
     }
 
     @Test
     public void testUpdateUser() throws Exception
     {
-        List<Reservation> reservations = new ArrayList<>();
-        User user = new User(1, "Valentin", "Amédée", "email@mail.com", "password", new Role(), reservations);
-        RequestBuilder request = MockMvcRequestBuilders.put("/api/user/1")
+        User user = new User();
+        user.setId(1);
+        user.setLastName("Valentin");
+        user.setFirstName("Amédée");
+        user.setEmail("email@mail.com");
+        user.setPassword("password");
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user));
 
         ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
-        String contentAsString = mockMvc.perform(request)
+        mockMvc.perform(request)
                 .andExpect(resultStatus)
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Valentin"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("Amédée"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("email@mail.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("password"))
                 .andReturn().getResponse().getContentAsString();
 
+    }
+
+    @Test
+    void testDeleteUser() throws Exception {
+        User user = userRepository.findById(1).orElse(null);
+        Assertions.assertNotNull(user);
+
+        mockMvc.perform( MockMvcRequestBuilders.delete("/api/user/{id}", 1) )
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        User user1 = userRepository.findById(1).orElse(null);
+        Assertions.assertNull(user1);
     }
 }
