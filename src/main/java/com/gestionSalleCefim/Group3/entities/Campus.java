@@ -26,7 +26,7 @@ public class Campus {
     @Column(name = "nom")
     private String name;
 
-    @OneToMany(mappedBy = "campus", targetEntity = Building.class)
+    @OneToMany(mappedBy = "campus", targetEntity = Building.class, cascade = CascadeType.ALL)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Building> building = new ArrayList<>();
 }
