@@ -43,8 +43,4 @@ public class Building {
     @OneToMany(mappedBy = "building", targetEntity = Room.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Room> rooms = new ArrayList<>();
-
-    Building(String name){
-        this.name = name;
-    }
 }

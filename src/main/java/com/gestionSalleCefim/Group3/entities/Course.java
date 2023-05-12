@@ -32,13 +32,7 @@ public class Course {
     @Column(name = "nb_etudiants")
     private Integer nbStudents;
 
-
     @OneToMany(mappedBy = "course", targetEntity = Reservation.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Reservation> reservation = new ArrayList<>();
-
-
-    Course(String lastname){
-        this.name = lastname;
-    }
 }

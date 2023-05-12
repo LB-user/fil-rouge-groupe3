@@ -70,7 +70,8 @@ public class RoomTests {
 
     @Test
     void testPostRoom() throws Exception {
-        Room room = new Room("RoomTest");
+        Room room = new Room();
+        room.setName("RoomTest");
         RequestBuilder request = MockMvcRequestBuilders.post("/api/room")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(room));

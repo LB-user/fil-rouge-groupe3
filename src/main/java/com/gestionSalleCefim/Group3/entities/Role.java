@@ -27,7 +27,4 @@ public class Role {
     @OneToMany(mappedBy = "role", targetEntity = User.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<User> users = new ArrayList<>();
-    Role(String name){
-        this.name = name;
-    }
 }

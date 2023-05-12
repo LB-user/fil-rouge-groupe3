@@ -26,11 +26,6 @@ public class Campus {
     @Column(name = "nom")
     private String name;
 
-    public Campus(String name) {
-        this.name = name;
-    }
-
-
     @OneToMany(mappedBy = "campus", targetEntity = Building.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Building> building = new ArrayList<>();

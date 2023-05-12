@@ -35,11 +35,6 @@ public class User {
     @JoinColumn(name = "roles_id", referencedColumnName = "id", nullable = false)
     private Role role;
 
-    public User(String email, String password){
-        this.email = email;
-        this.password = password;
-    }
-
     @OneToMany(mappedBy = "user", targetEntity = Reservation.class)
     @JsonIdentityReference(alwaysAsId = true)
     private List<Reservation> reservations = new ArrayList<>();
