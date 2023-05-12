@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This abstract class serves as a base service for working with entities in a Spring Boot application.
@@ -22,7 +21,7 @@ import java.util.Optional;
  * @param <T> the type of entity this service handles
  */
 @Service
-public abstract class BaseService<T> {
+public abstract class BaseService<T, R extends BaseRepository<T, Integer>> {
     private Class<T> type;
 
     public Class<T> getType() {
@@ -35,7 +34,7 @@ public abstract class BaseService<T> {
      * The repository layer for working with entities. This is autowired by Spring at runtime.
      */
     @Autowired(required = true)
-    protected BaseRepository<T, Integer> repository;
+    protected R repository;
 
     /**
      * Creates a new entity.
