@@ -107,6 +107,12 @@ public class RoomTests {
                 .andReturn().getResponse().getContentAsString();
     }
 
+    /**
+     *
+     * @throws Exception
+     *
+     * erreur attendue : java.lang.AssertionError: JSON path "$.capacity" expected:<24> but was:<25>
+     */
     @Test
     void testFindRoomByIdError() throws Exception {
         RequestBuilder request = MockMvcRequestBuilders.get("/api/room/{id}", 1);

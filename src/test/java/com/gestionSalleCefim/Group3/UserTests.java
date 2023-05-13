@@ -108,6 +108,12 @@ public class UserTests {
                 .andReturn().getResponse().getContentAsString();
     }
 
+    /**
+     *
+     * @throws Exception
+     *
+     * erreur attendue : java.lang.AssertionError: JSON path "$.lastName" expected:<Dupond> but was:<Dupont>
+     */
     @Test
     void testFindUserByIdError() throws Exception {
         RequestBuilder request = MockMvcRequestBuilders.get("/api/user/{id}", 1);
@@ -117,7 +123,6 @@ public class UserTests {
                 .andExpect(resultStatus)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Dupond"))
-                //erreur attendue : java.lang.AssertionError: JSON path "$.lastName" expected:<Dupond> but was:<Dupont>
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("Laurent"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("laurent.dupont@mail.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password").value("mypassword"))
