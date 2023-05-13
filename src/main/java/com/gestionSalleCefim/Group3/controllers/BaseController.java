@@ -4,6 +4,12 @@ import com.gestionSalleCefim.Group3.exceptions.EntityAlreadyExistsException;
 import com.gestionSalleCefim.Group3.exceptions.InvalidEntityException;
 import com.gestionSalleCefim.Group3.repositories.BaseRepository;
 import com.gestionSalleCefim.Group3.services.BaseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +25,9 @@ import java.util.List;
  * @param <T> the type of entity this controller handles
  */
 public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
+
+    Class<T> type;
+
     /**
      * The service layer for working with entities. This is autowired by Spring at runtime.
      */
@@ -31,6 +40,10 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      * @param entity the entity to create
      * @return a ResponseEntity containing the newly created entity
      */
+    @Operation(summary = "Create a new entity", responses = {
+            @ApiResponse(responseCode = "201", description = "Entity created",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid entity")})
     @PostMapping
     public ResponseEntity<?> create(@RequestBody T entity) throws EntityAlreadyExistsException, InvalidEntityException {
         T createdEntity = (T) baseService.save(entity);
@@ -42,6 +55,9 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      *
      * @return a ResponseEntity containing a list of all entities
      */
+    @Operation(summary = "Get all entities", responses = {
+            @ApiResponse(responseCode = "200", description = "List of entities",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class)))})
     @GetMapping("/all")
     public ResponseEntity<List<?>> getAll() {
         return ResponseEntity.ok(baseService.getAll());
@@ -53,8 +69,12 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      * @param id the ID of the entity to retrieve
      * @return a ResponseEntity containing the entity with the specified ID, or null if no entity with that ID exists
      */
+    @Operation(summary = "Get entity by ID", responses = {
+            @ApiResponse(responseCode = "200", description = "Entity found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
+            @ApiResponse(responseCode = "404", description = "Entity not found")})
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
+    public ResponseEntity<?> getById(@Parameter(description = "ID of the entity to retrieve") @PathVariable Integer id) {
         return ResponseEntity.ok(baseService.getById(id));
     }
 
@@ -63,6 +83,12 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      *
      * @return a ResponseEntity containing a list of all entities with filter
      */
+    @Operation(summary = "Get entities by filter", description = "Returns a list of entities that match the provided filter.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved entities that match the filter."),
+            @ApiResponse(responseCode = "400", description = "Invalid filter criteria provided."),
+            @ApiResponse(responseCode = "404", description = "No entities match the provided filter criteria.")
+    })
     @GetMapping("/filter")
     public ResponseEntity<?> getAllByFilter(@RequestBody T entity) {
         return ResponseEntity.ok(baseService.getAllByFilter(entity));
@@ -74,6 +100,11 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      * @param entity the entity to update
      * @return a ResponseEntity containing the updated entity
      */
+    @Operation(summary = "Updates an existing entity", responses = {
+            @ApiResponse(responseCode = "200", description = "The entity has been updated",
+                    content = @Content(schema = @Schema(implementation = Object.class))),
+            @ApiResponse(responseCode = "400", description = "The request is invalid",
+                    content = @Content)})
     @PutMapping
     public ResponseEntity<?> update(@RequestBody T entity) throws InvalidEntityException {
         return ResponseEntity.ok(baseService.update(entity));
@@ -85,6 +116,11 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      * @param id the ID of the entity to delete
      * @return a ResponseEntity with no response body
      */
+    @Operation(summary = "Deletes the entity with the specified ID", responses = {
+            @ApiResponse(responseCode = "204", description = "The entity has been deleted",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "The entity with the specified ID does not exist",
+                    content = @Content)})
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         baseService.delete(id);
