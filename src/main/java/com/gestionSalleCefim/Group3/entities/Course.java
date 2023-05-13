@@ -26,9 +26,9 @@ public class Course {
     @Column(name = "nom")
     private String name;
     @Column(name = "date_debut")
-    private LocalDate startTime;
+    private LocalDate startDate;
     @Column(name = "date_fin")
-    private LocalDate endTime;
+    private LocalDate endDate;
     @Column(name = "nb_etudiants")
     private Integer nbStudents;
 
