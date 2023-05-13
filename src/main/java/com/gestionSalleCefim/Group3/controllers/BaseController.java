@@ -2,6 +2,7 @@ package com.gestionSalleCefim.Group3.controllers;
 
 import com.gestionSalleCefim.Group3.exceptions.EntityAlreadyExistsException;
 import com.gestionSalleCefim.Group3.exceptions.InvalidEntityException;
+import com.gestionSalleCefim.Group3.repositories.BaseRepository;
 import com.gestionSalleCefim.Group3.services.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,12 @@ import java.util.List;
  *
  * @param <T> the type of entity this controller handles
  */
-public abstract class BaseController<T> {
+public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
     /**
      * The service layer for working with entities. This is autowired by Spring at runtime.
      */
     @Autowired
-    private BaseService<T> baseService;
+    private BaseService<T, R> baseService;
 
     /**
      * Create a new entity.
@@ -32,7 +33,7 @@ public abstract class BaseController<T> {
      */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody T entity) throws EntityAlreadyExistsException, InvalidEntityException {
-        T createdEntity = baseService.save(entity);
+        T createdEntity = (T) baseService.save(entity);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEntity);
     }
 
@@ -58,14 +59,24 @@ public abstract class BaseController<T> {
     }
 
     /**
+     * Returns the entity with the specified ID.
+     *
+     * @return a ResponseEntity containing a list of all entities with filter
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<?> getAllByFilter(@RequestBody T entity) {
+        return ResponseEntity.ok(baseService.getAllByFilter(entity));
+    }
+
+    /**
      * Updates an existing entity.
      *
      * @param entity the entity to update
      * @return a ResponseEntity containing the updated entity
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody T entity) {
-        return ResponseEntity.ok(baseService.update(id, entity));
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody T entity) throws InvalidEntityException {
+        return ResponseEntity.ok(baseService.update(entity));
     }
 
     /**

@@ -3,9 +3,13 @@ package com.gestionSalleCefim.Group3.services;
 import com.gestionSalleCefim.Group3.exceptions.EntityAlreadyExistsException;
 import com.gestionSalleCefim.Group3.exceptions.InvalidEntityException;
 import com.gestionSalleCefim.Group3.repositories.BaseRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,13 +23,20 @@ import java.util.List;
  * @param <T> the type of entity this service handles
  */
 @Service
-public abstract class BaseService<T> {
+public abstract class BaseService<T, R extends BaseRepository<T, Integer>> {
+    private Class<T> type;
 
+    public Class<T> getType() {
+        return type;
+    }
+
+    @PersistenceContext
+    protected EntityManager entityManager;
     /**
      * The repository layer for working with entities. This is autowired by Spring at runtime.
      */
     @Autowired(required = true)
-    protected BaseRepository<T, Integer> repository;
+    protected R repository;
 
     /**
      * Creates a new entity.
@@ -66,22 +77,41 @@ public abstract class BaseService<T> {
      */
     @Transactional
     public T getById(int id) {
+        getAll();
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
     }
 
     /**
+     * Returns a list of all entities from filter
+     *
+     * @param entity the entity with filters
+     */
+    public List<T> getAllByFilter(T entity) {
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll()
+                .withIgnoreNullValues()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+        return repository.findAll(Example.of(entity, exampleMatcher));
+    }
+
+    /**
      * Updates an existing entity.
      *
-     * @param id the ID of the entity to update
      * @param entity the entity to update
      * @return the updated entity
      */
     @Transactional
-    public T update(int id, T entity) {
-        T originalEntity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
-        return repository.save(originalEntity);
+    public T update(T entity) throws InvalidEntityException {
+        try {
+            Integer entityId = (Integer) entity.getClass().getMethod("getId").invoke(entity);
+            T entityToFind = getById(entityId);
+            if (entityToFind != null){
+                return repository.save(entity);
+            }
+            throw new EntityNotFoundException("Entity not found with id: " + entityId);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+            throw new InvalidEntityException("Failed to get ID field from entity", e);
+        }
     }
 
     /**
@@ -91,8 +121,9 @@ public abstract class BaseService<T> {
      */
     @Transactional
     public void delete(int id) {
-        T entityToDelete = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
-        repository.delete(entityToDelete);
+        T entityToFind = getById(id);
+        if (entityToFind != null){
+            repository.deleteById(id);
+        }
     }
 }
