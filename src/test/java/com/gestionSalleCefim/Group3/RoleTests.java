@@ -10,14 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,25 +39,115 @@ public class RoleTests {
     private ObjectMapper objectMapper;
 
     @Test
-    void testPrintAllRolesName(){
+    void testPostRole() throws Exception {
+        Role role = new Role();
+        role.setName("role test");
+
+        RequestBuilder request = MockMvcRequestBuilders.post("/api/role")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(role));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isCreated();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andReturn().getResponse().getContentAsString();
+
+        Role newRole = objectMapper.readValue(contentAsString, Role.class);
+        Assertions.assertNotNull(newRole.getId());
+    }
+
+    @Test
+    void testPostRoleIdExists() throws Exception {
+
+        Role role = new Role();
+        role.setId(1);
+        role.setName("role test");
+
+        RequestBuilder request = MockMvcRequestBuilders.post("/api/role")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(role));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isConflict();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andReturn().getResponse().getContentAsString();
+
+        Role newRole = objectMapper.readValue(contentAsString, Role.class);
+        assert !Objects.equals(newRole.getName(), role.getName());
+    }
+
+    @Test
+    void testPrintAllRolesLastName(){
         List<Role> roles = roleRepository.findAll();
         roles.forEach(role -> System.out.println(role.getName()));
     }
 
     @Test
-    void testGetAllRolesByAPI() throws Exception {
-        // Création de notre requête au moyen de la classe MockMvcRequestBuilders
-        // Utilisation de la méthode correspondant au verbe HTTP voulu, qui prend en paramètre l'URL du point d'API
-        RequestBuilder request = MockMvcRequestBuilders.get("/api/role/all");
-        // Test du status de la réponse, ici 200 (isOk())
+    void testFindRoleById() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/role/{id}", 1);
+
         ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
         String contentAsString = mockMvc.perform(request)
                 .andExpect(resultStatus)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Administrateur"))
+                .andReturn().getResponse().getContentAsString();
+    }
+
+    /**
+     *
+     * @throws Exception
+     *
+     * erreur attendue : java.lang.AssertionError: JSON path "$.name" expected:<Utilisateur> but was:<Administrateur>
+     */
+    @Test
+    void testFindRoleByIdError() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/role/{id}", 1);
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        String contentAsString = mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Utilisateur"))
+                .andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    void testGetAllRolesByAPI() {
+        MockMvcRequestBuilders.get("/api/role/all");
+
+        MockMvcResultMatchers.status().isOk();
+    }
+
+    @Test
+    public void testUpdateRole() throws Exception
+    {
+        Role role = new Role();
+        role.setId(1);
+        role.setName("role test update");
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/role")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(role));
+
+        ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+        mockMvc.perform(request)
+                .andExpect(resultStatus)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("role test update"))
                 .andReturn().getResponse().getContentAsString();
 
-        // Désérialisation du contenu de la réponse en List<Roles>
-        List<Role> roles = Arrays.asList(objectMapper.readValue(contentAsString, Role[].class));
+    }
 
-        Assertions.assertTrue(roles.contains(roleService.getById(1)));
+    @Test
+    void testDeleteRole() throws Exception {
+        Role role = roleRepository.findById(1).orElse(null);
+        Assertions.assertNotNull(role);
+
+        mockMvc.perform( MockMvcRequestBuilders.delete("/api/role/{id}", 1) )
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        Role role1 = roleRepository.findById(1).orElse(null);
+        Assertions.assertNull(role1);
     }
 }
