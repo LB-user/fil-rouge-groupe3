@@ -113,7 +113,7 @@ public class CourseTests {
      *
      * @throws Exception
      *
-     * erreur attendue : java.lang.AssertionError: JSON path "$.name" expected:<Marketing Digital> but was:<Analyse de Données>
+     * erreur attendue : java.lang.AssertionError: JSON path "$.name" expected:<Analyse de Données> but was:<Marketing Digital>
      */
     @Test
     void testFindCourseByIdError() throws Exception {
