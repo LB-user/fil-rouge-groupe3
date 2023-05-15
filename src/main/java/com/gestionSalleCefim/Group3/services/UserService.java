@@ -1,5 +1,4 @@
 package com.gestionSalleCefim.Group3.services;
-
 import com.gestionSalleCefim.Group3.entities.User;
 import com.gestionSalleCefim.Group3.exceptions.EntityAlreadyExistsException;
 import com.gestionSalleCefim.Group3.exceptions.InvalidEntityException;
@@ -21,9 +20,5 @@ public class UserService extends BaseService<User, UserRepository>{
         return super.save(entity);
     }
 
-    // login par mail
-    public User loadUserByEmail(String email) {
-        return repository.findByEmail(email);
-    }
 
 }
