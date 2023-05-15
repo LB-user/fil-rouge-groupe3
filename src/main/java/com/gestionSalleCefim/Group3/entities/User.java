@@ -45,6 +45,7 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "roles_id", referencedColumnName = "id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The role of the user")
     private Role role;
 
