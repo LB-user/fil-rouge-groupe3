@@ -1,8 +1,6 @@
 package com.gestionSalleCefim.Group3.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,7 +43,8 @@ public class Course {
     private Integer nbStudents;
 
     @OneToMany(mappedBy = "course", targetEntity = Reservation.class, cascade = CascadeType.ALL)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    private List<Reservation> reservation = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
 }
 

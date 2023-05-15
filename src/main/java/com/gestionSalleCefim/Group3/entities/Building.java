@@ -46,10 +46,10 @@ public class Building {
     @ManyToOne
     @JoinColumn(name = "campus_id", referencedColumnName = "id", nullable = false)
     @Schema(description = "The campus to which the building belongs")
+    @JsonIdentityReference(alwaysAsId = true)
     private Campus campus;
 
     @OneToMany(mappedBy = "building", targetEntity = Room.class, cascade = CascadeType.ALL)
-    @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The rooms that are located in this building")
     private List<Room> rooms = new ArrayList<>();
 }

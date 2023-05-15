@@ -45,11 +45,12 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "batiment_id", referencedColumnName = "id", nullable = false)
-    @JsonIgnoreProperties("rooms")
+    @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The building this room belongs to")
     private Building building;
 
     @OneToMany(mappedBy = "room", targetEntity = Reservation.class, cascade = CascadeType.ALL)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The reservations made for this room")
     private List<Reservation> reservations = new ArrayList<>();
