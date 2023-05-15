@@ -24,7 +24,8 @@ dependencies {
 	// Sql
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
-
+	//Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.26'
