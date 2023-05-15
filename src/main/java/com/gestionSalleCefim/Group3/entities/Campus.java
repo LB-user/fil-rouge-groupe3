@@ -31,7 +31,6 @@ public class Campus {
     private String name;
 
     @OneToMany(mappedBy = "campus", targetEntity = Building.class, cascade = CascadeType.ALL)
-    @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "List of buildings in the Campus")
     private List<Building> building = new ArrayList<>();
 }
