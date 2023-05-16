@@ -2,6 +2,7 @@ package com.gestionSalleCefim.Group3.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -57,78 +58,29 @@ public class User implements UserDetails {
     @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The list of reservations made by the user")
     private List<Reservation> reservations = new ArrayList<>();
-
+    @JsonIgnore
     @Column(name = "token") private String token;
-
-    /*@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    } */
-
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getName()));
     }
-
-    public String getPassword() {
-        return password;
-    }
-    @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
-    @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
-    @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
-    @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
-    @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }
