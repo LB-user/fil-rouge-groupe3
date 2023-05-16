@@ -109,6 +109,6 @@ class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         userRepository.save(byEmail);
         // Renvoie dans la réponse du JWT
         // Authorization : Bearer ...
-        res.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+token);
+        res.setHeader(HttpHeaders.AUTHORIZATION, "Bearer"+token);
     }
 }
