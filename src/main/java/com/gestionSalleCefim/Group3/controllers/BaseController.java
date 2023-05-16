@@ -34,7 +34,7 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
      * The service layer for working with entities. This is autowired by Spring at runtime.
      */
     @Autowired
-    private BaseService<T, R> baseService;
+    protected BaseService<T, R> baseService;
 
     /**
      * Create a new entity.
@@ -48,11 +48,14 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
             @ApiResponse(responseCode = "400", description = "Invalid filter criteria provided.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "404", description = "No entities match the provided filter criteria.",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
     })
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody T entity) throws EntityAlreadyExistsException, InvalidEntityException {
         T createdEntity = (T) baseService.save(entity);
@@ -75,11 +78,14 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
             ),
             @ApiResponse(responseCode = "400", description = "Invalid filter criteria provided.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "404", description = "No entities match the provided filter criteria.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
     })
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<?>> getAll() {
         return ResponseEntity.ok(baseService.getAll());
@@ -97,11 +103,14 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
             @ApiResponse(responseCode = "400", description = "Invalid filter criteria provided.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "404", description = "No entities match the provided filter criteria.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
     })
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@Parameter(description = "ID of the entity to retrieve") @PathVariable Integer id) {
         return ResponseEntity.ok(baseService.getById(id));
@@ -122,11 +131,14 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
             }),
             @ApiResponse(responseCode = "400", description = "Invalid filter criteria provided.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "404", description = "No entities match the provided filter criteria.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
     })
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/filter")
     public ResponseEntity<?> getAllByFilter(@RequestBody T entity) {
         return ResponseEntity.ok(baseService.getAllByFilter(entity));
@@ -144,11 +156,14 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
                     content = @Content(schema = @Schema(implementation = Object.class))),
             @ApiResponse(responseCode = "400", description = "The request is invalid",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "404", description = "No entities match the provided filter criteria.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class)))
     })
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody T entity) throws InvalidEntityException {
         return ResponseEntity.ok(baseService.update(entity));
@@ -166,13 +181,15 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
                     content = @Content),
             @ApiResponse(responseCode = "400", description = "The request is invalid",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class))),
             @ApiResponse(responseCode = "404", description = "The entity with the specified ID does not exist",
                     content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class)))
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrateur')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         baseService.delete(id);
         return ResponseEntity.noContent().build();
