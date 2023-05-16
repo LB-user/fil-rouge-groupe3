@@ -12,9 +12,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +28,8 @@ import java.util.List;
  *
  * @param <T> the type of entity this controller handles
  */
+@SecurityRequirement(name = "Authorization")
 public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
-
     /**
      * The service layer for working with entities. This is autowired by Spring at runtime.
      */
@@ -170,6 +172,7 @@ public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionMessage.class)))
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('Administrateur')")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         baseService.delete(id);
         return ResponseEntity.noContent().build();

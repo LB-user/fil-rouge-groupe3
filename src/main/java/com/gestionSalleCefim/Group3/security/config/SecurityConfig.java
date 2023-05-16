@@ -65,9 +65,9 @@ public class SecurityConfig {
         return (web) -> web.ignoring().requestMatchers(
                 "/api/security/resetPassword",
                 "/login",
-                "/v3/api-docs",
+                "/v3/api-docs/**",
                 "/swagger-resources/**",
-                "/swagger-ui.html**",
+                "/swagger-ui/**",
                 "/webjars/**",
                 "favicon.ico"
         );
