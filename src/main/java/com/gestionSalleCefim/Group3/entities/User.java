@@ -50,6 +50,7 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user", targetEntity = Reservation.class, cascade = CascadeType.ALL)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The list of reservations made by the user")
     private List<Reservation> reservations = new ArrayList<>();
