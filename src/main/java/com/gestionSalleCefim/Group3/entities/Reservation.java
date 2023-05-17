@@ -1,6 +1,7 @@
 package com.gestionSalleCefim.Group3.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,6 +60,7 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "salle_id", referencedColumnName = "id", nullable = false)
+    @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The room reserved for the course.", required = true)
     private Room room;
 }

@@ -29,6 +29,7 @@ import java.util.List;
  * @param <T> the type of entity this controller handles
  */
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "*", maxAge = 3600, allowCredentials="false")
 public abstract class BaseController<T, R extends BaseRepository<T, Integer>> {
     /**
      * The service layer for working with entities. This is autowired by Spring at runtime.

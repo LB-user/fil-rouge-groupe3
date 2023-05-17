@@ -51,7 +51,6 @@ public class Room {
 
     @OneToMany(mappedBy = "room", targetEntity = Reservation.class, cascade = CascadeType.ALL)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @Schema(description = "The reservations made for this room")
     private List<Reservation> reservations = new ArrayList<>();
 }
